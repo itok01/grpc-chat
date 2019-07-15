@@ -13,11 +13,11 @@ const (
 	port = ":8080"
 )
 
-type server struct{}
+type srv struct{}
 
 var users = make(map[string]pb.GrpcChat_TransferMessageServer)
 
-func (s *server) TransferMessage(stream pb.GrpcChat_TransferMessageServer) error {
+func (s *srv) TransferMessage(stream pb.GrpcChat_TransferMessageServer) error {
 	for {
 		msg, err := stream.Recv()
 		if err != nil {
@@ -27,7 +27,6 @@ func (s *server) TransferMessage(stream pb.GrpcChat_TransferMessageServer) error
 		if msg.Register {
 			_, exists := users[msg.User.Name]
 			if !(exists) {
-				fmt.Println(exists)
 				users[msg.User.Name] = stream
 			} else {
 				return fmt.Errorf("This name is already exists")
@@ -42,13 +41,13 @@ func (s *server) TransferMessage(stream pb.GrpcChat_TransferMessageServer) error
 	}
 }
 
-func main() {
+func server() {
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Fatal(err)
 	}
 	s := grpc.NewServer()
-	pb.RegisterGrpcChatServer(s, &server{})
+	pb.RegisterGrpcChatServer(s, &srv{})
 	if err := s.Serve(lis); err != nil {
 		log.Fatal(err)
 	}

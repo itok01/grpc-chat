@@ -16,7 +16,17 @@ const (
 	address = "localhost:8080"
 )
 
-func main() {
+func input() (text string) {
+	scanner := bufio.NewScanner(os.Stdin)
+
+	scanner.Scan()
+	text = scanner.Text()
+
+	text = strings.TrimSpace(text)
+	return
+}
+
+func client() {
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
 		log.Fatal(err)
@@ -53,14 +63,4 @@ func main() {
 	}
 
 	stream.CloseSend()
-}
-
-func input() (text string) {
-	scanner := bufio.NewScanner(os.Stdin)
-
-	scanner.Scan()
-	text = scanner.Text()
-
-	text = strings.TrimSpace(text)
-	return
 }
